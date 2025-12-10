@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - APP_ENV=production
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=sqlsrv
+      - DB_HOST=db
+      - DB_PORT=1433
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    volumes:
+      - ./storage:/var/www/html/storage
+    networks:
+      - laravel
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/lib/sqlserver/data
+      - db_log:/var/lib/sqlserver/log
+    networks:
+      - laravel
+
+volumes:
+  db_data:
+  db_log:
+
+networks:
+  laravel:
+    driver: bridge
