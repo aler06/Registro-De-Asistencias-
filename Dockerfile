@@ -1,5 +1,5 @@
-# Usa una imagen base de PHP con Apache
-FROM php:8.1-apache
+# Usa una imagen base de PHP con Apache compatible con Debian 11
+FROM php:8.1-apache-bullseye
 
 # Instala dependencias del sistema y extensiones PHP necesarias para SQL Server
 RUN apt-get update && apt-get install -y \
