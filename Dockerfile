@@ -1,5 +1,5 @@
-# Usa PHP con Apache para simplicidad
-FROM php:8.1-apache
+# Usa PHP 8.2 con Apache para compatibilidad con Filament
+FROM php:8.2-apache
 
 # Instala dependencias del sistema
 RUN apt-get update && apt-get install -y \
@@ -9,11 +9,12 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    libicu-dev \
     zip \
     unzip \
     nodejs \
     npm \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -27,8 +28,11 @@ WORKDIR /var/www/html
 # Copia archivos del proyecto
 COPY . .
 
-# Instala dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader
+# Configura git para permitir el directorio
+RUN git config --global --add safe.directory /var/www/html
+
+# Instala dependencias de PHP (ignora requisitos de plataforma si es necesario)
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=php
 
 # Instala dependencias de Node.js y construye assets
 RUN npm install && npm run build
