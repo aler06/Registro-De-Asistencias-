@@ -48,7 +48,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
 # Crea archivo .env de producción (se copiará desde el host)
-RUN cp .env .env.production
+RUN cp .env .env.production .env
 
 # Expone el puerto 80
 EXPOSE 80
