@@ -45,6 +45,19 @@ RUN chown -R www-data:www-data /var/www/html \
 # Usa el archivo .env.production del repositorio
 RUN mv .env.production .env
 
+# Configura Apache para servir desde la carpeta public de Laravel
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
+
+# Habilita mod_rewrite para Laravel
+RUN a2enmod rewrite
+
+# Crea .htaccess si no existe
+RUN echo '<IfModule mod_rewrite.c>\n\
+    RewriteEngine On\n\
+    RewriteRule ^(.*)$ public/$1 [L]\n\
+</IfModule>' > /var/www/html/.htaccess
+
 # Expone el puerto 80
 EXPOSE 80
 
